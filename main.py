@@ -107,7 +107,7 @@ sql="desc BASIC_STACK_INFO"
 
 conn = pymysql.connect(host="springboot2-webservice.ctsnx9zgivip.ap-northeast-2.rds.amazonaws.com",
                       user="admin",
-                      password="rnjs1078",
+                      password="",
                       db='stackinfo',
                       charset='utf8')
 cur = conn.cursor()
