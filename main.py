@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[99]:
+# In[2]:
 
 
 import requests 
@@ -12,14 +12,14 @@ import time
 from datetime import datetime
 
 
-# In[19]:
+# In[3]:
 
 
 
 pd.options.display.float_format = '{:.2f}'.format #소수 둘째까지 
 
 
-# In[29]:
+# In[4]:
 
 
 ### 코스피 200 기업, 정보 가져오기
@@ -27,13 +27,13 @@ pd.options.display.float_format = '{:.2f}'.format #소수 둘째까지
 KOSPI200_df = pd.read_excel('KOSPI200LIST.xlsx')
 
 
-# In[30]:
+# In[5]:
 
 
 KOSPI200_df
 
 
-# In[59]:
+# In[6]:
 
 
 stock_code = KOSPI200_df.loc[0,"종목코드"]
@@ -41,7 +41,7 @@ stock_name = KOSPI200_df.loc[0,"종목명"]
 print(stock_code, stock_name)
 
 
-# In[70]:
+# In[7]:
 
 
 data_table_sum = pd.DataFrame(index=range(0,1))
@@ -168,23 +168,8 @@ data_table_sum
 
 # 
 # 
-# 매출액
-# 매출액 성장률 낮은
-# 
-# 배당금
-# 적자면서 배당금
-# 
-# PER, PBR, PSR, PCR
-# ROE ROA
-# 
-# 영업이익률 / 매출액
-# 당기순이익률
-# 
-# 부채비율
-# NCAV
-# 
 
-# In[102]:
+# In[8]:
 
 
 #기본값
@@ -248,8 +233,105 @@ merge_inner = pd.merge(df_매출, df_영업이익, how='left')
 merge_inner
 
 
+# In[22]:
+
+
+# 매출액
+# 매출액 성장률이  가장낮은 10개
+df_org = data_table_sum
+df_매출 = df_org[(df_org['주요재무'] == "매출액")]
+df_매출
+
+df_매출[post_year + 'p'] = df_매출[post_post_year] / df_매출[post_year]
+df_매출[year + 'p'] = df_매출[post_year] / df_매출[year]
+
+
+df_매출 = df_매출.sort_values(by=year + 'p' ,ascending=True)
+df_매출
+#df_매출.loc[(df_매출[post_post_year] / df_매출[post_year]).idxmin()]
+
+
+# In[29]:
+
+
+
+# 배당금
+# 적자면서 배당금
+df_org = data_table_sum
+
+#적자
+df_영업이익 = df_org[(df_org['주요재무'] == "영업이익")]
+df_영업이익= df_영업이익[df_영업이익[year] < 0]
+print(df_영업이익)
+
+
+df_현금배당수익률 = df_org[(df_org['주요재무'] == "현금배당수익률")]
+
+df_현금배당수익률 = df_현금배당수익률.sort_values(by=year ,ascending=False)
+df_현금배당수익률
+
+merge_inner = pd.merge(df_영업이익, df_현금배당수익률, how='left')
+merge_inner
+
+
+# In[32]:
+
+
+# PER, PBR, PSR, PCR
+# ROE ROA
+df_org = data_table_sum
+df_PER = df_org[(df_org['주요재무'] == "PER(배)")]
+df_PER = df_PER.sort_values(by=year ,ascending=True)
+print(df_PER)
+
+df_PBR = df_org[(df_org['주요재무'] == "PBR(배)")]
+df_PBR = df_PBR.sort_values(by=year ,ascending=True)
+print(df_PBR)
+
+
+# In[44]:
+
+
+
+# 영업이익률 / 매출액
+# 당기순이익률
+df_org = data_table_sum
+df_영업이익 = df_org[(df_org['주요재무'] == "영업이익")]
+df_매출액 = df_org[(df_org['주요재무'] == "매출액")]
+
+df_영업이익.reset_index(drop=True, inplace=True)
+df_매출액.reset_index(drop=True, inplace=True)
+
+df_영업이익['영업이익률'] = df_영업이익[year] / df_매출액[year]
+df_영업이익 = df_영업이익.sort_values(by='영업이익률' ,ascending=True)
+
+print(df_영업이익)
+
+
+# In[45]:
+
+
+# 부채비율
+df_org = data_table_sum
+df_부채비율 = df_org[(df_org['주요재무'] == "부채비율")]
+df_부채비율
+
+
 # In[ ]:
 
 
 
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+NCAV
 
